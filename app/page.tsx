@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import RepoCard from "../components/RepoCard";
 import SearchBar from "../components/SearchBar";
 import SkeletonCard from "../components/SkeletonCard";
+import PageWrapper from "../components/PageWrapper";
 import { fetchRepos } from "../lib/api";
 import { FaGithub } from "react-icons/fa";
-
+import Link from "next/link";
 
 export default function Home() {
   const [repos, setRepos] = useState([]);
@@ -21,38 +22,56 @@ export default function Home() {
 
   useEffect(() => {
     loadRepos();
+
+    const handleFocus = () => {
+      loadRepos();
+    };
+
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+    };
   }, []);
 
   return (
-    <main className="min-h-screen p-6 bg-[#0f172a] text-white">
+    <PageWrapper>
+      <main className="min-h-screen bg-[#0f172a] text-white p-6">
 
-      {/* Header */}
-      <div className="text-center mb-6">
-        <div className="flex justify-center items-center gap-2">
-          <FaGithub size={28} />
-          <h1 className="text-2xl font-semibold">
-            GitHub Repo Explorer
-          </h1>
+        <div className="mb-6">
+
+          <div className="flex justify-end">
+            <Link href="/favorites" className="text-blue-400">
+              Favorites ❤️
+            </Link>
+          </div>
+
+          <div className="flex flex-col items-center mt-2">
+            <div className="flex items-center gap-2">
+              <FaGithub size={26} />
+              <h1 className="text-2xl font-semibold">
+                GitHub Repo Explorer
+              </h1>
+            </div>
+
+            <p className="text-gray-400 text-sm mt-1">
+              Search and explore popular repositories
+            </p>
+          </div>
+
         </div>
 
-        <p className="text-gray-400 text-sm mt-2">
-          Search and explore popular repositories
-        </p>
-      </div>
+        <SearchBar onSearch={loadRepos} />
 
-      <SearchBar onSearch={loadRepos} />
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {loading
+            ? Array(6).fill(0).map((_, i) => <SkeletonCard key={i} />)
+            : repos.map((repo: any) => (
+              <RepoCard key={repo.id} repo={repo} />
+            ))}
+        </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-        {loading
-          ? Array(6).fill(0).map((_, i) => <SkeletonCard key={i} />)
-          : repos.map((repo: any, i) => (
-            <RepoCard key={i} repo={repo} />
-          ))
-        }
-
-      </div>
-
-    </main>
+      </main>
+    </PageWrapper>
   );
 }

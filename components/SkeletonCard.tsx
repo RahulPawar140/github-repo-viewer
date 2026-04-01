@@ -1,6 +1,6 @@
 export default function SkeletonCard() {
     return (
-        <div className="bg-white/10 backdrop-blur-lg p-5 rounded-2xl animate-pulse">
+        <div className="bg-[#1e293b] p-4 rounded animate-pulse opacity-0 animate-fadeIn">
 
             <div className="h-5 bg-gray-400/30 rounded w-3/4 mb-3"></div>
 
